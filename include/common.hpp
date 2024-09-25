@@ -8,7 +8,7 @@
 
 #include <cstdlib>
 #include <stdint.h>
-
+#include "../include/libcuckoo/cuckoohash_map.hh"
 #ifdef PRINT
 	#define printLog(var) do { std::cerr << "INFO:	" << __FILE__ << "(" << __LINE__ << ")	" << #var << " = " << (var) << std::endl; } while(0)
 #else
@@ -33,11 +33,12 @@ struct Ctparams
 {
 	uint32_t kmerSize;			// KmerSize
     uint64_t batchsize;
-	Ctparams(): kmerSize(21), batchsize(1000000000) {};
+	uint32_t threads;
+	Ctparams(): kmerSize(21), batchsize(1000000000), threads(16) {};
 };
 
 
-
+typedef cuckoohash_map<std::string, unsigned short int> dictionary_t_16bit;
 
 
 

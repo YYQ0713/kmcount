@@ -10,7 +10,7 @@ endif ()
 
 include_directories(include)
 FILE(GLOB_RECURSE KMC "src/*.cpp")
-
+add_subdirectory(libbloom)
 
 find_package(ZLIB REQUIRED)
 find_package(OpenMP REQUIRED)
@@ -25,3 +25,4 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -ggdb -O1 -D_LIBCPP_DEBUG -D_GLIBCXX_DEBUG")
 
 add_executable(kmc ${KMC})
 target_link_libraries(kmc ${ZLIB_LIBRARIES})
+target_link_libraries(kmc PRIVATE LIBBLOOM)

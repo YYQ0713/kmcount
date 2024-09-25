@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
   ("f, files", "List of Fasta/q(s) (required)", 	cxxopts::value<std::string>())
   ("o, output", "Output Filename (required)", 	cxxopts::value<std::string>())
   ("b, batchsize", "batchsize of file read once", 	cxxopts::value<uint64_t>()->default_value("1000000000"))
+  ("t, threads", "nums of threads",       cxxopts::value<uint32_t>()->default_value("16"))
   ("h, help", "Usage")
   ;
 
@@ -81,9 +82,14 @@ int main(int argc, char *argv[]) {
 	countpars.kmerSize 	= result["kmer"].as<uint32_t>();
   countpars.batchsize = result["batchsize"].as<uint64_t>();
 
+  countpars.threads = result["threads"].as<uint32_t>();
+  omp_set_num_threads(countpars.threads);
+  
   vector<fileinfos> allfiles_path = GetFiles(inputfofn);
 
   CardinalityEstimate = hyperloglog(countpars.kmerSize, allfiles_path, countpars.batchsize);
   printf("test2 %ld\n", CardinalityEstimate);
 
+  dictionary_t_16bit count_kmer;
+  kmer_counting(countpars.kmerSize, count_kmer, allfiles_path, CardinalityEstimate, countpars.batchsize);
 }
