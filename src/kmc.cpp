@@ -92,9 +92,9 @@ std::string revcomp(const char* seq, int i, int j) {
     return revComp;
 }
 
-uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_size) {
+uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_size, uint32_t ts) {
 
-    vector <HyperLogLog> hlls(THREADS, HyperLogLog(12));
+    vector <HyperLogLog> hlls(ts, HyperLogLog(12));
 	bseq_file_t *fp = 0;
     seqs_t seqs;
     double hlltime = omp_get_wtime();
@@ -109,7 +109,7 @@ uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_
             {
                 break;
             }
-            
+
             #pragma omp parallel for
             for (auto i = 0; i < seqs.n_seq; i++)
             {
@@ -161,11 +161,9 @@ uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_
         } // while()
 
 
-
-
     } // all files
     // HLL reduction (serial for now) to avoid double iteration
-    for (int i = 1; i < THREADS; i++) 
+    for (int i = 1; i < ts; i++) 
     {
         std::transform(hlls[0].M.begin(), hlls[0].M.end(), hlls[i].M.begin(), hlls[0].M.begin(), [](uint8_t c1, uint8_t c2) -> uint8_t{ return std::max(c1, c2); });
     }
@@ -173,7 +171,7 @@ uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_
     uint64_t CardinalityEstimate = hlls[0].estimate();
 
     return CardinalityEstimate;
-    printLog(CardinalityEstimate);
+
 }
 
 void kmer_counting(uint32_t kmersize, dictionary_t_16bit& count_kmer, vector<fileinfos> files, uint64_t CardinalityEstimate, uint64_t chunk_size) {

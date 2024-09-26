@@ -16,6 +16,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
+
   // -------------------- //
   // Program name message
   // -------------------- //
@@ -84,12 +85,12 @@ int main(int argc, char *argv[]) {
 
   countpars.threads = result["threads"].as<uint32_t>();
   omp_set_num_threads(countpars.threads);
-  
+
   vector<fileinfos> allfiles_path = GetFiles(inputfofn);
 
-  CardinalityEstimate = hyperloglog(countpars.kmerSize, allfiles_path, countpars.batchsize);
-  printf("test2 %ld\n", CardinalityEstimate);
+  CardinalityEstimate = hyperloglog(countpars.kmerSize, allfiles_path, countpars.batchsize, countpars.threads);
+  printf("cardianl: %ld\n", CardinalityEstimate);
 
   dictionary_t_16bit count_kmer;
-  kmer_counting(countpars.kmerSize, count_kmer, allfiles_path, CardinalityEstimate, countpars.batchsize);
+  //kmer_counting(countpars.kmerSize, count_kmer, allfiles_path, CardinalityEstimate, countpars.batchsize);
 }
