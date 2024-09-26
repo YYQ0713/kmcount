@@ -131,7 +131,7 @@ int bloom_check_add(struct bloom * bloom,
 }
 
 
-int bloom_init64(struct bloom * bloom, int64_t entries, double error)
+int bloom_init64(struct bloom * bloom, int64_t entries, double error, uint64_t& bf_mem)
 {
   bloom->ready = 0;
 
@@ -157,7 +157,7 @@ int bloom_init64(struct bloom * bloom, int64_t entries, double error)
 
   bloom->hashes = (int)ceil(0.693147180559945 * bloom->bpe);  // ln(2)
 
-
+  bf_mem = bloom->bytes;
   bloom->bf = new bf_type[bloom->bytes]();
   
 #ifdef _OPENMP

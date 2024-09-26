@@ -71,7 +71,7 @@ struct bloom
  *     1 - on failure
  *
  */
-int bloom_init64(struct bloom * bloom, int64_t entries, double error);
+int bloom_init64(struct bloom * bloom, int64_t entries, double error, uint64_t& bf_mem);
 
 
 /** ***************************************************************************

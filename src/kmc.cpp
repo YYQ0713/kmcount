@@ -174,14 +174,18 @@ uint64_t hyperloglog(uint32_t kmersize, vector<fileinfos> files, uint64_t chunk_
 
 }
 
-void kmer_counting(uint32_t kmersize, dictionary_t_16bit& count_kmer, vector<fileinfos> files, uint64_t CardinalityEstimate, uint64_t chunk_size) {
+void kmer_counting(uint32_t kmersize, dictionary_t_16bit& count_kmer, vector<fileinfos> files, uint64_t CardinalityEstimate, uint64_t chunk_size, uint32_t ts) {
 	
     bseq_file_t *fp = 0;
     seqs_t seqs;
+	double BFCtime = omp_get_wtime();
 
     const double desired_probability_of_false_positive = 0.05;
 	struct bloom * bm = (struct bloom*) malloc(sizeof(struct bloom));
-	bloom_init64(bm, CardinalityEstimate * 1.1, desired_probability_of_false_positive);
+    uint64_t bf_mem;
+	bloom_init64(bm, CardinalityEstimate * 1.1, desired_probability_of_false_positive, bf_mem);
+    std::string BFMEM = std::to_string(bf_mem / (1024 * 1024)) + " MB";
+    printLog(BFMEM);
 
     for(auto itf = files.begin(); itf != files.end(); itf++) {
         fp = bseq_open(itf->filename);
@@ -251,6 +255,11 @@ void kmer_counting(uint32_t kmersize, dictionary_t_16bit& count_kmer, vector<fil
     } // all files
 
     free(bm);
+
+	double BFCtime_end = omp_get_wtime();
+	std::string BFTime = std::to_string(BFCtime_end - BFCtime) + " seconds";
+    printLog(BFTime);
+
 	// Print some information about the table
 	if (count_kmer.size() == 0)
 	{

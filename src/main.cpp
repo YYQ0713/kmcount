@@ -92,5 +92,5 @@ int main(int argc, char *argv[]) {
   printf("cardianl: %ld\n", CardinalityEstimate);
 
   dictionary_t_16bit count_kmer;
-  //kmer_counting(countpars.kmerSize, count_kmer, allfiles_path, CardinalityEstimate, countpars.batchsize);
+  kmer_counting(countpars.kmerSize, count_kmer, allfiles_path, CardinalityEstimate, countpars.batchsize, countpars.threads);
 }
